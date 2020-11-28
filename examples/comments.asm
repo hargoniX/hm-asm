@@ -1,0 +1,2 @@
+// comment
+LDA #1

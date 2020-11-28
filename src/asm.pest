@@ -1,0 +1,30 @@
+program = _{ SOI ~ "\n"* ~ (stmt ~ "\n"+) * ~ stmt? ~ EOI }
+
+
+stmt = { ((label ~ ":")? ~ instruction)}
+
+
+instruction = {
+    no_arg_instruction |
+    arg_instruction ~ argument |
+    jump_instruction ~ jump_argument |
+    memory_location_instruction ~ memory_location |
+    constant_arg_instruction ~ digit_literal
+}
+
+memory_location_instruction = {"STA"}
+constant_arg_instruction = {"BRZ" | "BRC" | "BRN"}
+jump_instruction = {"JMP"}
+arg_instruction = {"LDA" | "ADD" | "SUB"}
+no_arg_instruction = { "NOP" }
+
+jump_argument = { jump_location | label}
+argument = { memory_location | digit_literal }
+memory_location = { "(" ~ ASCII_HEX_DIGIT ~")" }
+digit_literal = {"#" ~ ASCII_HEX_DIGIT}
+jump_location = { ASCII_HEX_DIGIT }
+
+label = { ASCII_ALPHA_UPPER+ }
+
+WHITESPACE = _{ " " | "\t" }
+COMMENT = _{"//" ~ (!"\n" ~ ANY)* }
