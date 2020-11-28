@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use std::fmt;
 
 pub struct Program {
-    data_memory: [u8; 16],
+    pub data_memory: [u8; 16],
     program_memory: [u8; 16],
 }
 
@@ -82,7 +82,7 @@ pub fn generate_binary(instructions: Vec<Instruction>) -> Program {
     }
 }
 
-fn insert_label<'a>(hashmap: &mut HashMap<&'a str, u8>, label: &Option<Label<'a>>) {
+pub fn insert_label<'a>(hashmap: &mut HashMap<&'a str, u8>, label: &Option<Label<'a>>) {
     if let Some(label) = label {
         hashmap.insert(label.name, label.location);
     }
