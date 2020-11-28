@@ -1,16 +1,14 @@
-use std::fs;
 use std::env;
-
+use std::fs;
 
 #[macro_use]
 extern crate pest_derive;
 
 use pest::Parser;
 
-
 mod asm;
-mod parse;
 mod generate;
+mod parse;
 
 use parse::{parse_asm, AsmParser};
 
@@ -27,6 +25,8 @@ fn main() {
         }
     };
 
-    let instructions = parse_asm(AsmParser::parse(parse::Rule::program, &file_content).unwrap_or_else(|e| panic!("{}", e)));
+    let instructions = parse_asm(
+        AsmParser::parse(parse::Rule::program, &file_content).unwrap_or_else(|e| panic!("{}", e)),
+    );
     println!("{:#?}", instructions);
 }
