@@ -10,6 +10,7 @@ mod asm;
 mod generate;
 mod parse;
 
+use generate::generate_binary;
 use parse::{parse_asm, AsmParser};
 
 fn main() {
@@ -28,5 +29,6 @@ fn main() {
     let instructions = parse_asm(
         AsmParser::parse(parse::Rule::program, &file_content).unwrap_or_else(|e| panic!("{}", e)),
     );
-    println!("{:#?}", instructions);
+    let binary = generate_binary(instructions);
+    println!("{}", binary);
 }

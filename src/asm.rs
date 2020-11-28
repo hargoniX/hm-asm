@@ -48,3 +48,86 @@ pub enum ArgumentInstruction {
     ADD(Argument),
     SUB(Argument),
 }
+
+pub struct BinaryInstruction {
+    pub opcode: u8,
+    pub argument: u8,
+}
+
+impl<'a> Into<BinaryInstruction> for NoArgumentInstruction {
+    fn into(self) -> BinaryInstruction {
+        match self {
+            NoArgumentInstruction::NOP => BinaryInstruction {
+                opcode: 0,
+                argument: 0,
+            },
+        }
+    }
+}
+
+impl<'a> Into<BinaryInstruction> for MemoryLocationInstruction {
+    fn into(self) -> BinaryInstruction {
+        match self {
+            MemoryLocationInstruction::STA(arg) => BinaryInstruction {
+                opcode: 3,
+                argument: arg,
+            },
+        }
+    }
+}
+
+impl<'a> Into<BinaryInstruction> for ConstantArgumentInstruction {
+    fn into(self) -> BinaryInstruction {
+        match self {
+            ConstantArgumentInstruction::BRZ(arg) => BinaryInstruction {
+                opcode: 9,
+                argument: arg,
+            },
+            ConstantArgumentInstruction::BRC(arg) => BinaryInstruction {
+                opcode: 10,
+                argument: arg,
+            },
+            ConstantArgumentInstruction::BRN(arg) => BinaryInstruction {
+                opcode: 11,
+                argument: arg,
+            },
+        }
+    }
+}
+
+impl<'a> Into<BinaryInstruction> for ArgumentInstruction {
+    fn into(self) -> BinaryInstruction {
+        match self {
+            ArgumentInstruction::LDA(arg) => match arg {
+                Argument::MemoryLocation(arg) => BinaryInstruction {
+                    opcode: 2,
+                    argument: arg,
+                },
+                Argument::Constant(arg) => BinaryInstruction {
+                    opcode: 1,
+                    argument: arg,
+                },
+            },
+            ArgumentInstruction::ADD(arg) => match arg {
+                Argument::MemoryLocation(arg) => BinaryInstruction {
+                    opcode: 5,
+                    argument: arg,
+                },
+                Argument::Constant(arg) => BinaryInstruction {
+                    opcode: 4,
+                    argument: arg,
+                },
+            },
+            ArgumentInstruction::SUB(arg) => match arg {
+                Argument::MemoryLocation(arg) => BinaryInstruction {
+                    opcode: 7,
+                    argument: arg,
+                },
+                Argument::Constant(arg) => BinaryInstruction {
+                    opcode: 6,
+                    argument: arg,
+                },
+            },
+        }
+    }
+}
