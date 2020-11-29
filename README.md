@@ -3,10 +3,29 @@ A small assembler I wrote for use with the microprocessor from the Book "Grundla
 W. Hoffmann.
 
 ## How does it work?
-You run the binary with a path to an assembler file like this `cargo run path/to/file.asm`.
+You can generate the data and program memory for a program like this:
+```
+$ cargo run -- generate examples/add_endless.asm
+Data Memory:
+0 1 1 0
+0 0 0 0
+0 0 0 0
+0 0 0 0
+Program Memory:
+1 4 8 0
+0 0 0 0
+0 0 0 0
+0 0 0 0
+And that's your program!
+
+```
+Alternatively you can simulate an asm program for n clock cycles like this:
+```
+$ cargo run -- simulate examples/add_endless.asm 4
+```
 
 ## Syntax?
-You can find some syntax examples in `examples/`
+You can find some syntax examples for the assembler in `examples/`
 
 ## Limitations
 Note that since this microprocessor is only a 4 bit microporcessor we cannot possibly have programs with more than 16

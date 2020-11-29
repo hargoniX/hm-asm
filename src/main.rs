@@ -10,9 +10,12 @@ mod asm;
 mod generate;
 mod parse;
 mod simulate;
+mod html;
 
 use generate::generate_binary;
 use parse::{parse_asm, AsmParser};
+use html::html_state_table;
+
 
 fn main() {
     let sub_cmd = env::args().nth(1);
@@ -41,7 +44,8 @@ fn main() {
         else if sub_cmd == "simulate" {
             if let Some(steps) = steps {
                 let states = simulate::simulate(instructions, steps.parse::<usize>().unwrap());
-                println!("{:#?}", states);
+                //println!("{:#?}", states);
+                println!("{}", html_state_table(states));
             }
         }
     }

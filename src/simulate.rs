@@ -3,6 +3,7 @@ use crate::asm::*;
 use crate::generate::generate_binary;
 
 use std::collections::HashMap;
+use std::fmt;
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub struct StateRegister {
@@ -31,6 +32,29 @@ pub struct State {
     opcode_info: Option<OpcodeInfo>
 }
 
+
+impl fmt::Display for State {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        writeln!(f, "<tr>")?;
+        writeln!(f, "<td style=\"border: 1px solid #000000; padding: 0mm 1.91mm;\">{}</td>", self.step)?;
+        writeln!(f, "<td style=\"border: 1px solid #000000; padding: 0mm 1.91mm;\">{}</td>", self.clk as u8)?;
+        writeln!(f, "<td style=\"border: 1px solid #000000; padding: 0mm 1.91mm;\">{}</td>", self.pc)?;
+        writeln!(f, "<td style=\"border: 1px solid #000000; padding: 0mm 1.91mm;\">{}</td>", self.addr_bus)?;
+        writeln!(f, "<td style=\"border: 1px solid #000000; padding: 0mm 1.91mm;\">{}</td>", self.data_bus)?;
+        writeln!(f, "<td style=\"border: 1px solid #000000; padding: 0mm 1.91mm;\">{}</td>", self.ir)?;
+        writeln!(f, "<td style=\"border: 1px solid #000000; padding: 0mm 1.91mm;\">{}</td>", self.dr)?;
+        writeln!(f, "<td style=\"border: 1px solid #000000; padding: 0mm 1.91mm;\">{}</td>", self.akku)?;
+        writeln!(f, "<td style=\"border: 1px solid #000000; padding: 0mm 1.91mm;\">C: {}, Z: {}, N: {}</td>", self.sr.carry as u8, self.sr.zero as u8, self.sr.negative as u8)?;
+        if let Some(opcode_info) = self.opcode_info {
+            writeln!(f, "<td style=\"border: 1px solid #000000; padding: 0mm 1.91mm;\">addr: {}, val: {}</td>", opcode_info.addr, opcode_info.content)?;
+        } else {
+            writeln!(f, "<td style=\"border: 1px solid #000000; padding: 0mm 1.91mm;\"></td>")?;
+        }
+        writeln!(f, "</tr>")
+    }
+}
+
+
 pub fn simulate<'a>(instructions: Vec<Instruction<'a>>, max_steps: usize) -> Vec<State> {
     let mut data_memory = generate_binary(instructions.clone()).data_memory;
 
@@ -38,13 +62,13 @@ pub fn simulate<'a>(instructions: Vec<Instruction<'a>>, max_steps: usize) -> Vec
 
     let mut states: Vec<State> = Vec::new();
     let mut step: usize = 0;
-    let mut clk: bool = false;
-    let mut pc: u8 = 0;
-    let mut addr_bus: u8 = 0;
-    let mut data_bus: u8 = 0;
+    let mut clk: bool;
+    let mut pc: u8;
+    let mut addr_bus: u8;
+    let mut data_bus: u8;
     let mut ir : u8 = 0;
     let mut dr : u8 = 0;
-    let mut akku : u8 = 0;
+    let mut akku : u8;
     let mut sr: StateRegister = StateRegister {
         carry: false,
         zero: false,
