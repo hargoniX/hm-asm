@@ -23,6 +23,8 @@ Alternatively you can simulate an asm program for n clock cycles like this:
 ```
 $ cargo run -- simulate examples/add_endless.asm 4
 ```
+It is going to proceed and print an HTML table of all states since the only purpose of this tool is to avoid using
+mahara as an in browser lab book -> we just autogenerate the tables.
 
 ## Syntax?
 You can find some syntax examples for the assembler in `examples/`
