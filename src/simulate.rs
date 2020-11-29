@@ -68,7 +68,7 @@ pub fn simulate<'a>(instructions: Vec<Instruction<'a>>, max_steps: usize) -> Vec
     let mut data_bus: u8;
     let mut ir : u8 = 0;
     let mut dr : u8 = 0;
-    let mut akku : u8;
+    let mut akku : u8 = 0;
     let mut sr: StateRegister = StateRegister {
         carry: false,
         zero: false,
@@ -89,16 +89,30 @@ pub fn simulate<'a>(instructions: Vec<Instruction<'a>>, max_steps: usize) -> Vec
 
     let mut next_pc = 0;
     let mut next_akku = 0;
-    let mut next_data_mem_addr = 0;
-    let mut next_data_mem_val = 0;
-    let mut first_iter = true;
+    let mut next_carry = false;
+    let mut next_data_mem_addr: Option<usize> = None;
+    let mut next_data_mem_val: Option<u8> = None;
     loop {
+        if next_akku != akku {
+            next_carry = (next_akku & (1<<4)) != 0;
+        }
+
+        next_pc = next_pc % 16;
+        next_akku = next_akku % 16;
+
         pc = next_pc;
         akku = next_akku;
-        if !first_iter {
-            data_memory[next_data_mem_addr] = next_data_mem_val;
+        if let Some(addr) = next_data_mem_addr {
+            data_memory[addr] = next_data_mem_val.unwrap();
+            next_data_mem_addr = None;
+            next_data_mem_val = None;
         }
-        let instruction = instructions[pc as usize];
+
+        let instruction = if pc as usize > instructions.len() - 1 {
+            Instruction::NoArgumentInstruction(NoArgumentInstruction::NOP, None)
+        } else {
+            instructions[pc as usize]
+        };
 
         let binary_instruction: BinaryInstruction = match instruction {
             Instruction::NoArgumentInstruction(instruction, _) => instruction.into(),
@@ -124,6 +138,7 @@ pub fn simulate<'a>(instructions: Vec<Instruction<'a>>, max_steps: usize) -> Vec
         };
 
         clk = false;
+
         addr_bus = pc;
         data_bus = data_memory[pc as usize];
         let opcode_info = match instruction {
@@ -156,8 +171,15 @@ pub fn simulate<'a>(instructions: Vec<Instruction<'a>>, max_steps: usize) -> Vec
         });
 
         clk = true;
+
+        sr.carry = next_carry;
+        sr.zero = akku == 0 || akku == (1<<4);
+        sr.negative = (akku & (1<<3)) != 0;
+
         dr = binary_instruction.argument;
         ir = binary_instruction.opcode;
+
+        addr_bus = dr;
 
         match instruction {
             Instruction::NoArgumentInstruction(instruction, _) => match instruction {
@@ -181,8 +203,8 @@ pub fn simulate<'a>(instructions: Vec<Instruction<'a>>, max_steps: usize) -> Vec
             },
             Instruction::MemoryLocationInstruction(arg, _) => match arg {
                 MemoryLocationInstruction::STA(arg) => {
-                    next_data_mem_addr = arg as usize;
-                    next_data_mem_val = akku;
+                    next_data_mem_addr = Some(arg as usize);
+                    next_data_mem_val = Some(akku);
                 }
             },
             Instruction::ArgumentInstruction(instruction, _) => match instruction {
@@ -195,11 +217,13 @@ pub fn simulate<'a>(instructions: Vec<Instruction<'a>>, max_steps: usize) -> Vec
                     Argument::Constant(val) => next_akku = akku + val
                 },
                 ArgumentInstruction::SUB(arg) => match arg {
-                    Argument::MemoryLocation(location) => next_akku = akku - data_memory[location as usize],
-                    Argument::Constant(val) => next_akku = akku - val
+                    Argument::MemoryLocation(location) => next_akku = akku + (data_memory[location as usize] ^ 0b1111) + 1,
+                    Argument::Constant(val) => next_akku = akku + (val ^ 0b1111) + 1
                 }
             }
         }
+
+        data_bus = data_memory[addr_bus as usize];
 
         if next_pc == pc {
             next_pc = pc + 1;
@@ -218,12 +242,7 @@ pub fn simulate<'a>(instructions: Vec<Instruction<'a>>, max_steps: usize) -> Vec
             opcode_info
         });
 
-        sr.carry = (akku & (1<<4)) != 0;
-        sr.zero = akku == 0 || akku == (1<<4);
-        sr.negative = (akku & (1<<3)) != 0;
-
         step += 1;
-        first_iter = false;
         if step == max_steps {
             break;
         }
