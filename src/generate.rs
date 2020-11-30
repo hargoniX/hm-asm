@@ -68,6 +68,12 @@ pub fn generate_binary(instructions: Vec<Instruction>) -> Program {
                     } else {
                         panic!("Tried to JMP to label: {}, which does not exist", arg);
                     }
+                },
+                JumpArgument::MemoryLocation(address) => {
+                    BinaryInstruction {
+                        opcode: 12,
+                        argument: *address
+                    }
                 }
             },
         };

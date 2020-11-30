@@ -169,6 +169,11 @@ fn parse_jump_argument<'a>(arg: Pair<'a, Rule>) -> JumpArgument<'a> {
         Rule::label => JumpArgument::Label(arg.as_str()),
         Rule::jump_location => {
             JumpArgument::Location(u8::from_str_radix(arg.as_str(), 16).unwrap())
+        },
+        Rule::memory_location => {
+            let arg_string = arg.as_str();
+            let arg_value = u8::from_str_radix(&arg_string[1..arg_string.len() - 1], 16).unwrap();
+            JumpArgument::MemoryLocation(arg_value)
         }
         _ => unreachable!(),
     }

@@ -138,6 +138,12 @@ pub fn simulate<'a>(instructions: Vec<Instruction<'a>>, max_steps: usize) -> Vec
                     } else {
                         panic!("Tried to JMP to label: {}, which does not exist", arg);
                     }
+                },
+                JumpArgument::MemoryLocation(address) => {
+                    BinaryInstruction {
+                        opcode: 12,
+                        argument: address
+                    }
                 }
             },
         };
@@ -205,6 +211,10 @@ pub fn simulate<'a>(instructions: Vec<Instruction<'a>>, max_steps: usize) -> Vec
                     next_pc = Some(location);
                     addr_bus = location;
                 },
+                JumpArgument::MemoryLocation(location) => {
+                    next_pc = Some(data_memory[location as usize]);
+                    addr_bus = data_memory[location as usize];
+                }
             },
             Instruction::MemoryLocationInstruction(arg, _) => match arg {
                 MemoryLocationInstruction::STA(arg) => {

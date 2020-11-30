@@ -14,6 +14,7 @@ pub struct Label<'a> {
 pub enum JumpArgument<'a> {
     Location(u8),
     Label(&'a str),
+    MemoryLocation(u8),
 }
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]

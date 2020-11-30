@@ -18,7 +18,7 @@ jump_instruction = {"JMP"}
 arg_instruction = {"LDA" | "ADD" | "SUB"}
 no_arg_instruction = { "NOP" }
 
-jump_argument = { jump_location | label }
+jump_argument = { jump_location | label | memory_location }
 argument = { memory_location | digit_literal }
 memory_location = { "(" ~ ASCII_HEX_DIGIT ~")" }
 digit_literal = {"#" ~ ASCII_HEX_DIGIT}
