@@ -165,6 +165,12 @@ pub fn simulate<'a>(instructions: Vec<Instruction<'a>>, max_steps: usize) -> Vec
                         _ => None
                     }
                 }
+            },
+            Instruction::Jump(JumpArgument::MemoryLocation(location), _) => {
+                Some(OpcodeInfo{
+                    addr: location,
+                    content: data_memory[location as usize]
+                })
             }
             _ => None
         };
