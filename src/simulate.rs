@@ -63,7 +63,7 @@ pub fn simulate<'a>(instructions: Vec<Instruction<'a>>, max_steps: usize) -> Vec
     let mut states: Vec<State> = Vec::new();
     let mut step: usize = 0;
     let mut clk: bool;
-    let mut pc: u8;
+    let mut pc: u8 = 0;
     let mut addr_bus: u8;
     let mut data_bus: u8;
     let mut ir : u8 = 0;
@@ -87,7 +87,7 @@ pub fn simulate<'a>(instructions: Vec<Instruction<'a>>, max_steps: usize) -> Vec
         }
     }
 
-    let mut next_pc = 0;
+    let mut next_pc: Option<u8> = None;
     let mut next_akku = 0;
     let mut next_carry = false;
     let mut next_data_mem_addr: Option<usize> = None;
@@ -97,11 +97,16 @@ pub fn simulate<'a>(instructions: Vec<Instruction<'a>>, max_steps: usize) -> Vec
             next_carry = (next_akku & (1<<4)) != 0;
         }
 
-        next_pc = next_pc % 16;
-        next_akku = next_akku % 16;
+        if let Some(mut next_pc_value) = next_pc {
+            next_pc_value = next_pc_value % 16;
+            next_akku = next_akku % 16;
+            pc = next_pc_value;
+            next_pc = None;
+        }
 
-        pc = next_pc;
+
         akku = next_akku;
+
         if let Some(addr) = next_data_mem_addr {
             data_memory[addr] = next_data_mem_val.unwrap();
             next_data_mem_addr = None;
@@ -186,19 +191,19 @@ pub fn simulate<'a>(instructions: Vec<Instruction<'a>>, max_steps: usize) -> Vec
                 NoArgumentInstruction::NOP => {}
             },
             Instruction::ConstantArgumentInstruction(instruction, _) => match instruction {
-                ConstantArgumentInstruction::BRC(arg) if sr.carry => next_pc = pc + arg,
-                ConstantArgumentInstruction::BRN(arg) if sr.negative => next_pc = pc + arg,
-                ConstantArgumentInstruction::BRZ(arg) if sr.zero => next_pc = pc + arg,
+                ConstantArgumentInstruction::BRC(arg) if sr.carry => next_pc = Some(pc + arg),
+                ConstantArgumentInstruction::BRN(arg) if sr.negative => next_pc = Some(pc + arg),
+                ConstantArgumentInstruction::BRZ(arg) if sr.zero => next_pc = Some(pc + arg),
                 _ => {}
             },
             Instruction::Jump(arg, _) => match arg {
                 JumpArgument::Label(label) => {
-                    next_pc = *labels.get(label).unwrap();
-                    addr_bus = next_pc;
+                    next_pc = Some(*labels.get(label).unwrap());
+                    addr_bus = *labels.get(label).unwrap();
                 },
                 JumpArgument::Location(location) => {
-                    next_pc = location;
-                    addr_bus = next_pc;
+                    next_pc = Some(location);
+                    addr_bus = location;
                 },
             },
             Instruction::MemoryLocationInstruction(arg, _) => match arg {
@@ -225,8 +230,8 @@ pub fn simulate<'a>(instructions: Vec<Instruction<'a>>, max_steps: usize) -> Vec
 
         data_bus = data_memory[addr_bus as usize];
 
-        if next_pc == pc {
-            next_pc = pc + 1;
+        if let None = next_pc {
+            next_pc = Some(pc + 1);
         }
 
         states.push(State{
