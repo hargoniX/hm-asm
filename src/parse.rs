@@ -29,7 +29,7 @@ pub fn parse_asm<'a>(pairs: Pairs<'a, Rule>) -> Vec<Instruction<'a>> {
             instruction_counter += 1;
         }
 
-        if instruction_counter > 15 {
+        if instruction_counter > 16 {
             panic!("This program contains more than 16 instructions, that is impossible on this processor");
         }
     }
