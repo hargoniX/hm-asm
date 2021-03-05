@@ -5,6 +5,9 @@ two functions to javascript.
 - `simulate(code: &str, cycles: usize)`, its return value is equivalent to the one of `hm_asm_simulator::simulate::simulate`
 - `assemble(code: &str)`, its return vlaue is equivalent to the one of `hm_asm_simulator::generate::generate_binary`
 
+If either of the functions should fail they will return their Rust error as a String. In the case of a grammar based
+error, this would be a nice pest.rs error.
+
 ## Demo
 In `demo/` You'll find a demo app that compiles and simulates a simple program inside of the console.
 You can test it with
