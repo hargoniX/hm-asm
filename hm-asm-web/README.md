@@ -8,6 +8,13 @@ two functions to javascript.
 If either of the functions should fail they will return their Rust error as a String. In the case of a grammar based
 error, this would be a nice pest.rs error.
 
+## Building it
+
+You can build this crate by installing `wasm-pack` and running
+```
+$ wasm-pack build
+```
+
 ## Demo
 In `demo/` You'll find a demo app that compiles and simulates a simple program inside of the console.
 You can test it with
