@@ -1,19 +1,15 @@
 use std::env;
 use std::fs;
 
-#[macro_use]
-extern crate pest_derive;
+use hm_asm_simulator::{
+    generate::generate_binary,
+    parse::{parse_asm, AsmParser, Rule},
+    simulate::simulate
+};
 
 use pest::Parser;
 
-mod asm;
-mod generate;
-mod parse;
-mod simulate;
 mod html;
-
-use generate::generate_binary;
-use parse::{parse_asm, AsmParser};
 use html::html_state_table;
 
 
@@ -34,7 +30,7 @@ fn main() {
         };
 
         let instructions = parse_asm(
-            AsmParser::parse(parse::Rule::program, &file_content).unwrap_or_else(|e| panic!("{}", e)),
+            AsmParser::parse(Rule::program, &file_content).unwrap_or_else(|e| panic!("{}", e)),
         );
 
         if sub_cmd == "generate" {
@@ -43,11 +39,12 @@ fn main() {
         }
         else if sub_cmd == "simulate" {
             if let Some(steps) = steps {
-                let states = simulate::simulate(instructions, steps.parse::<usize>().unwrap());
+                let states = simulate(instructions, steps.parse::<usize>().unwrap());
                 //println!("{:#?}", states);
                 println!("{}", html_state_table(states));
             }
         }
+    } else {
+        println!("No argument was passed, exiting");
     }
-
 }

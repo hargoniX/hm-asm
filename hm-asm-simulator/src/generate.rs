@@ -2,9 +2,12 @@ use crate::asm::*;
 use std::collections::HashMap;
 use std::fmt;
 
+use serde::Serialize;
+
+#[derive(Serialize)]
 pub struct Program {
     pub data_memory: [u8; 16],
-    program_memory: [u8; 16],
+    pub program_memory: [u8; 16],
 }
 
 impl fmt::Display for Program {

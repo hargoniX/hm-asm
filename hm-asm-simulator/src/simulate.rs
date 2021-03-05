@@ -5,31 +5,33 @@ use crate::generate::generate_binary;
 use std::collections::HashMap;
 use std::fmt;
 
-#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+use serde::Serialize;
+
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Serialize)]
 pub struct StateRegister {
-    carry: bool,
-    zero: bool,
-    negative: bool
+    pub carry: bool,
+    pub zero: bool,
+    pub negative: bool
 }
 
-#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Serialize)]
 pub struct OpcodeInfo {
-    addr: u8,
-    content: u8
+    pub addr: u8,
+    pub content: u8
 }
 
-#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Serialize)]
 pub struct State {
-    step: usize,
-    clk: bool,
-    pc: u8,
-    addr_bus: u8,
-    data_bus: u8,
-    ir: u8, // instruction register
-    dr: u8, // data register
-    akku: u8,
-    sr: StateRegister,
-    opcode_info: Option<OpcodeInfo>
+    pub step: usize,
+    pub clk: bool,
+    pub pc: u8,
+    pub addr_bus: u8,
+    pub data_bus: u8,
+    pub ir: u8, // instruction register
+    pub dr: u8, // data register
+    pub akku: u8,
+    pub sr: StateRegister,
+    pub opcode_info: Option<OpcodeInfo>
 }
 
 

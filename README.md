@@ -4,30 +4,6 @@ W. Hoffmann.
 
 This microprocessor has a single accumulator register that calculations use.
 
-## How does it work?
-You can generate the data and program memory for a program like this:
-```
-$ cargo run -- generate examples/add_endless.asm
-Data Memory:
-0 1 1 0
-0 0 0 0
-0 0 0 0
-0 0 0 0
-Program Memory:
-1 4 8 0
-0 0 0 0
-0 0 0 0
-0 0 0 0
-And that's your program!
-
-```
-Alternatively you can simulate an asm program for n clock cycles like this:
-```
-$ cargo run -- simulate examples/add_endless.asm 4
-```
-It is going to proceed and print an HTML table of all states since the only purpose of this tool is to avoid using
-mahara as an in browser lab book -> we just autogenerate the tables.
-
 ## Syntax
 
 The processor supports the following commands:
@@ -57,3 +33,11 @@ You can find some syntax examples for the assembler in `examples/`
 The operand size of four bits limits the directly addressable memory to 16 instructions. This generally limits the memory size, while large program memory is supported. Furthermore since the operands of the instructions are stored in the same part of memory as where you
 can store values with the `STA` instruction it is technically possible to overwrite your program operands at runtime and do a
 sort of self modifying programming style, this assembler does not warn you if you do this as of now.
+
+## Project structure
+The project consists of 3 main components:
+- `hm-asm-simulator` is a Rust library that contains the parsing, compilation and simulation logic
+- `hm-asm-cli` is a CLI frontend for `hm-asm-simulator`
+- `hm-asm-web` is a WebAssemly library frontend for `hm-asm-simulator`
+
+For more information regarding the specific sub components refer to their individual READMEs

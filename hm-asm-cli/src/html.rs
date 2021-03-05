@@ -1,4 +1,4 @@
-use crate::simulate::State;
+use hm_asm_simulator::simulate::State;
 use std::fmt::Write;
 
 static TABLE_HEADER: &str = "
