@@ -14,3 +14,4 @@ keywords = ["asm", "cli", "hm-asm", "simulator", "assembler"]
 [dependencies]
 hm-asm-simulator = { path = "../hm-asm-simulator", version = "0.1.0" }
 pest = "2.0"
+clap = "2.33"
